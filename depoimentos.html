@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cards de depoimento · Danfer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+  :root{--cream:#f4eee2;--paper:#fbf8f1;--card:#fffdf8;--green:#1e3a2c;--gold:#b08d57;--ink:#26302b;--muted:#7c7566;--line:#e6ddca}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--cream);color:var(--ink)}
+  .wrap{max-width:1100px;margin:0 auto;padding:28px 18px;display:grid;gap:24px;grid-template-columns:360px 1fr;align-items:start}
+  @media(max-width:860px){.wrap{grid-template-columns:1fr}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--green);font-size:28px;margin:0 0 4px}
+  p.sub{color:var(--muted);font-size:14px;margin:0 0 16px}
+  label{display:block;font-size:13px;font-weight:600;color:var(--green);margin:14px 0 6px}
+  input,textarea,select{width:100%;font:inherit;font-size:14px;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:10px 12px;color:var(--ink)}
+  textarea{min-height:130px;resize:vertical}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .stars{display:flex;gap:4px}
+  .stars button{background:none;border:0;font-size:28px;color:var(--line);cursor:pointer;padding:0}
+  .stars button.on{color:var(--gold)}
+  .btn{display:block;width:100%;margin-top:18px;border:0;border-radius:999px;padding:13px;font:inherit;font-weight:600;cursor:pointer;background:var(--green);color:var(--cream)}
+  .btn:hover{opacity:.92}
+  .check{display:flex;gap:10px;align-items:flex-start;font-size:13px;margin-top:14px;color:var(--ink)}
+  .check input{width:18px;height:18px;accent-color:var(--green);margin-top:2px}
+  .warn{font-size:12.5px;color:#a8432f;margin-top:8px;display:none}
+  .preview{display:flex;justify-content:center}
+  canvas{width:100%;max-width:520px;height:auto;border-radius:12px;box-shadow:0 24px 50px -30px rgba(30,58,44,.5)}
+  .count{font-size:12px;color:var(--muted);text-align:right;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="panel">
+    <h1>Card de depoimento</h1>
+    <p class="sub">Cole um depoimento real e autorizado. A arte atualiza na hora.</p>
+
+    <label>Nome do cliente</label>
+    <input id="nome" placeholder="Ex.: Mariana S." value="">
+
+    <label>Serviço</label>
+    <input id="servico" placeholder="Ex.: Ensaio fotográfico" value="">
+
+    <label>Avaliação</label>
+    <div class="stars" id="stars"></div>
+
+    <label>Depoimento</label>
+    <textarea id="texto" maxlength="320" placeholder="Cole aqui o depoimento exatamente como o cliente escreveu."></textarea>
+    <div class="count" id="count">0/320</div>
+
+    <div class="row">
+      <div>
+        <label>Formato</label>
+        <select id="formato">
+          <option value="feed">Feed 4:5</option>
+          <option value="story">Stories 9:16</option>
+        </select>
+      </div>
+      <div>
+        <label>Estilo</label>
+        <select id="estilo">
+          <option value="claro">Claro</option>
+          <option value="verde">Verde</option>
+        </select>
+      </div>
+    </div>
+
+    <label class="check"><input type="checkbox" id="autorizado"> O cliente autorizou a publicação deste depoimento com o nome dele.</label>
+    <div class="warn" id="warn">Marque a autorização antes de baixar.</div>
+
+    <button class="btn" id="baixar">Baixar imagem</button>
+  </div>
+
+  <div class="preview"><canvas id="cv"></canvas></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const cv = $('cv'), ctx = cv.getContext('2d');
+let nota = 5;
+
+const C = {
+  claro: { bg: '#f6f1e7', card: '#fffdf8', ink: '#26302b', title: '#1e3a2c', gold: '#b08d57', muted: '#7c7566', line: '#e6ddca' },
+  verde: { bg: '#1e3a2c', card: '#244635', ink: '#f4eee2', title: '#f4eee2', gold: '#c9a96e', muted: '#cbbf9f', line: '#3a5b49' }
+};
+
+function drawStarsUI() {
+  const s = $('stars'); s.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = '★'; b.className = i <= nota ? 'on' : '';
+    b.onclick = () => { nota = i; drawStarsUI(); draw(); };
+    s.append(b);
+  }
+}
+
+function wrapLines(text, maxWidth) {
+  const words = text.split(/\s+/).filter(Boolean), lines = [];
+  let line = '';
+  words.forEach(w => {
+    const test = line ? line + ' ' + w : w;
+    if (ctx.measureText(test).width > maxWidth && line) { lines.push(line); line = w; }
+    else line = test;
+  });
+  if (line) lines.push(line);
+  return lines;
+}
+
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+
+function ornament(cx, y, color) {
+  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(cx - 120, y); ctx.lineTo(cx - 22, y); ctx.moveTo(cx + 22, y); ctx.lineTo(cx + 120, y); ctx.stroke();
+  ctx.save(); ctx.translate(cx, y); ctx.rotate(Math.PI / 4); ctx.fillRect(-7, -7, 14, 14); ctx.restore();
+}
+
+function draw() {
+  const story = $('formato').value === 'story';
+  const W = 1080, H = story ? 1920 : 1350;
+  cv.width = W; cv.height = H;
+  const p = C[$('estilo').value];
+  const nome = $('nome').value.trim() || 'Nome do cliente';
+  const servico = $('servico').value.trim();
+  const texto = $('texto').value.trim() || 'O depoimento do cliente aparece aqui.';
+  $('count').textContent = `${$('texto').value.length}/320`;
+
+  ctx.fillStyle = p.bg; ctx.fillRect(0, 0, W, H);
+
+  const pad = 80, cardY = story ? 360 : 250, cardH = story ? 1180 : 860;
+  ctx.fillStyle = p.card; roundRect(pad, cardY, W - pad * 2, cardH, 36); ctx.fill();
+  ctx.strokeStyle = p.line; ctx.lineWidth = 2; ctx.stroke();
+  ctx.strokeStyle = p.gold; ctx.lineWidth = 1.5; roundRect(pad + 18, cardY + 18, W - pad * 2 - 36, cardH - 36, 26); ctx.stroke();
+
+  ctx.textAlign = 'center';
+  const top = story ? 150 : 90;
+  ctx.fillStyle = p.gold; ctx.font = '96px "Pinyon Script"'; ctx.fillText('Danfer', W / 2, top + 70);
+  ctx.font = '600 24px Cinzel'; ctx.letterSpacing = '10px'; ctx.fillText('FOTOGRAFIAS.', W / 2 + 5, top + 112); ctx.letterSpacing = '0px';
+
+  ctx.font = '600 26px Cinzel'; ctx.fillStyle = p.muted; ctx.letterSpacing = '6px';
+  ctx.fillText('O QUE NOSSOS CLIENTES DIZEM', W / 2 + 3, cardY + 110); ctx.letterSpacing = '0px';
+
+  ctx.font = '64px serif'; ctx.fillStyle = p.gold;
+  ctx.fillText('★'.repeat(nota) + '☆'.repeat(5 - nota), W / 2, cardY + 200);
+
+  ctx.font = '600 160px "Cormorant Garamond"'; ctx.fillStyle = p.gold; ctx.globalAlpha = .35;
+  ctx.fillText('“', W / 2, cardY + 330); ctx.globalAlpha = 1;
+
+  const maxW = W - pad * 2 - 160;
+  let size = 50, lines;
+  do { ctx.font = `italic 500 ${size}px "Cormorant Garamond"`; lines = wrapLines(texto, maxW); size -= 2; }
+  while (lines.length * size * 1.35 > cardH - 520 && size > 30);
+  const lh = (size + 2) * 1.35;
+  const blockH = lines.length * lh;
+  let y = cardY + 300 + ((cardH - 560) - blockH) / 2 + lh * .7;
+  ctx.fillStyle = p.title;
+  lines.forEach(l => { ctx.fillText(l, W / 2, y); y += lh; });
+
+  const baseY = cardY + cardH - 170;
+  ornament(W / 2, baseY, p.gold);
+  ctx.fillStyle = p.title; ctx.font = '600 40px "Cormorant Garamond"'; ctx.fillText(nome, W / 2, baseY + 64);
+  if (servico) { ctx.fillStyle = p.muted; ctx.font = '500 26px Inter'; ctx.fillText(servico, W / 2, baseY + 104); }
+
+  ctx.fillStyle = p.muted; ctx.font = '500 28px Inter';
+  ctx.fillText('@danfer.fotografia', W / 2, H - (story ? 200 : 90));
+}
+
+['nome', 'servico', 'texto', 'formato', 'estilo'].forEach(id => $(id).addEventListener('input', draw));
+$('autorizado').addEventListener('change', () => $('warn').style.display = 'none');
+
+$('baixar').addEventListener('click', () => {
+  if (!$('autorizado').checked) { $('warn').style.display = 'block'; return; }
+  const a = document.createElement('a');
+  const nome = ($('nome').value.trim() || 'cliente').toLowerCase().replace(/[^a-z0-9]+/gi, '-');
+  a.download = `danfer-depoimento-${nome}-${$('formato').value}.png`;
+  a.href = cv.toDataURL('image/png');
+  a.click();
+});
+
+drawStarsUI();
+document.fonts.ready.then(draw);
+draw();
+</script>
+</body>
+</html>
