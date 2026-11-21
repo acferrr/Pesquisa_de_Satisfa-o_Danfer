@@ -3,190 +3,371 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cards de depoimento · Danfer</title>
+<title>Pesquisa de satisfação · Danfer Fotografias</title>
+<meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&family=Pinyon+Script&display=swap" rel="stylesheet">
 <style>
-  :root{--cream:#f4eee2;--paper:#fbf8f1;--card:#fffdf8;--green:#1e3a2c;--gold:#b08d57;--ink:#26302b;--muted:#7c7566;--line:#e6ddca}
+  :root{
+    --cream:#f4eee2; --paper:#fbf8f1; --card:#fffdf8;
+    --green:#1e3a2c; --green2:#2b4d3b; --gold:#b08d57; --gold2:#c9a96e;
+    --ink:#26302b; --muted:#7c7566; --line:#e6ddca; --err:#a8432f;
+    --ease:cubic-bezier(.2,.8,.2,1);
+  }
   *{box-sizing:border-box}
-  body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--cream);color:var(--ink)}
-  .wrap{max-width:1100px;margin:0 auto;padding:28px 18px;display:grid;gap:24px;grid-template-columns:360px 1fr;align-items:start}
-  @media(max-width:860px){.wrap{grid-template-columns:1fr}}
-  .panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px}
-  h1{font-family:'Cormorant Garamond',serif;font-weight:600;color:var(--green);font-size:28px;margin:0 0 4px}
-  p.sub{color:var(--muted);font-size:14px;margin:0 0 16px}
-  label{display:block;font-size:13px;font-weight:600;color:var(--green);margin:14px 0 6px}
-  input,textarea,select{width:100%;font:inherit;font-size:14px;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:10px 12px;color:var(--ink)}
-  textarea{min-height:130px;resize:vertical}
-  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold)}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .stars{display:flex;gap:4px}
-  .stars button{background:none;border:0;font-size:28px;color:var(--line);cursor:pointer;padding:0}
+  [hidden]{display:none!important}
+  body{margin:0;min-height:100vh;font-family:Inter,system-ui,sans-serif;color:var(--ink);font-size:16px;line-height:1.55;
+    background:var(--cream) radial-gradient(circle at 20% 0%,#fbf7ee 0,transparent 60%);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:640px;margin:0 auto;padding:28px 18px 60px}
+  header{text-align:center;margin-bottom:22px}
+  .mono{width:58px;height:58px;margin:0 auto 10px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;
+    font-family:Cinzel,serif;font-size:19px;color:var(--gold);letter-spacing:1px}
+  .logo{font-family:'Pinyon Script',cursive;font-size:44px;line-height:1;color:var(--gold)}
+  .logo-sub{font-family:Cinzel,serif;font-size:11px;letter-spacing:.42em;color:var(--gold);margin-top:2px}
+  .progress{height:4px;background:var(--line);border-radius:4px;overflow:hidden;margin:22px 0 8px}
+  .progress i{display:block;height:100%;width:0;background:var(--gold);transition:width .5s var(--ease)}
+  .step-label{font-size:12px;color:var(--muted);text-align:center;letter-spacing:.04em}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:30px 26px;margin-top:16px;
+    box-shadow:0 18px 40px -30px rgba(30,58,44,.35);animation:in .45s var(--ease)}
+  @keyframes in{from{opacity:0;transform:translateY(12px)}}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:32px;line-height:1.1;color:var(--green);margin:0 0 8px;text-align:center}
+  .lead{color:var(--muted);text-align:center;margin:0 0 6px}
+  .divider{display:flex;align-items:center;gap:10px;justify-content:center;margin:16px 0 4px;color:var(--gold)}
+  .divider:before,.divider:after{content:'';height:1px;width:60px;background:var(--gold2);opacity:.6}
+  .q{padding:20px 0;border-top:1px solid var(--line)}
+  .q-t{font-weight:600;color:var(--green);margin-bottom:4px}
+  .q-t .req{color:var(--gold);margin-left:3px}
+  .q-h{font-size:13px;color:var(--muted);margin-bottom:10px}
+  .q.miss .q-t{color:var(--err)}
+  .q .msg{display:none;font-size:13px;color:var(--err);margin-top:8px}
+  .q.miss .msg{display:block}
+  .opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .opt{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:9px 16px;
+    font:inherit;font-size:14px;cursor:pointer;transition:all .2s var(--ease)}
+  .opt:hover{border-color:var(--gold2);transform:translateY(-1px)}
+  .opt.on{background:var(--green);color:#f4eee2;border-color:var(--green)}
+  .scale{display:grid;gap:6px;margin-top:10px}
+  .scale.s5{grid-template-columns:repeat(5,1fr)}
+  .scale.s11{grid-template-columns:repeat(11,1fr)}
+  .scale button{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:10px 0;font:inherit;font-weight:600;
+    color:var(--green);cursor:pointer;transition:all .2s var(--ease)}
+  .scale button:hover{border-color:var(--gold2)}
+  .scale button.on{background:var(--gold);border-color:var(--gold);color:#fff}
+  .scale-legend{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px}
+  .stars{display:flex;gap:6px;margin-top:8px}
+  .stars button{background:none;border:0;padding:2px;cursor:pointer;font-size:34px;line-height:1;color:var(--line);transition:transform .15s,color .15s}
+  .stars button:hover{transform:scale(1.12)}
   .stars button.on{color:var(--gold)}
-  .btn{display:block;width:100%;margin-top:18px;border:0;border-radius:999px;padding:13px;font:inherit;font-weight:600;cursor:pointer;background:var(--green);color:var(--cream)}
-  .btn:hover{opacity:.92}
-  .check{display:flex;gap:10px;align-items:flex-start;font-size:13px;margin-top:14px;color:var(--ink)}
-  .check input{width:18px;height:18px;accent-color:var(--green);margin-top:2px}
-  .warn{font-size:12.5px;color:#a8432f;margin-top:8px;display:none}
-  .preview{display:flex;justify-content:center}
-  canvas{width:100%;max-width:520px;height:auto;border-radius:12px;box-shadow:0 24px 50px -30px rgba(30,58,44,.5)}
+  input[type=text],textarea{width:100%;margin-top:10px;font:inherit;color:var(--ink);background:var(--paper);
+    border:1px solid var(--line);border-radius:12px;padding:12px 14px;transition:border-color .2s,box-shadow .2s}
+  textarea{min-height:96px;resize:vertical}
+  input:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(176,141,87,.18)}
+  button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   .count{font-size:12px;color:var(--muted);text-align:right;margin-top:4px}
+  .check{display:flex;gap:12px;align-items:flex-start;font-size:14px;cursor:pointer}
+  .check input{width:20px;height:20px;accent-color:var(--green);margin-top:2px;flex-shrink:0}
+  .nav{display:flex;gap:10px;justify-content:space-between;margin-top:24px}
+  .btn{border:1px solid var(--green);background:transparent;color:var(--green);border-radius:999px;padding:12px 22px;
+    font:inherit;font-weight:600;cursor:pointer;transition:all .2s var(--ease);text-decoration:none;display:inline-block}
+  .btn:hover{transform:translateY(-1px)}
+  .btn.primary{background:var(--green);color:#f4eee2;margin-left:auto}
+  .btn.primary:hover{background:var(--green2)}
+  .btn.gold{background:var(--gold);border-color:var(--gold);color:#fff}
+  .note{font-size:12.5px;color:var(--muted);background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:16px}
+  .alert{display:none;background:#f7e9e3;color:var(--err);border-radius:12px;padding:10px 14px;font-size:14px;margin-top:16px}
+  .alert.show{display:block}
+  .done{text-align:center}
+  .done .seal{width:74px;height:74px;margin:0 auto 14px;border-radius:50%;background:var(--green);color:var(--gold2);display:grid;place-items:center;font-size:32px}
+  .status{font-size:13px;color:var(--green);margin-top:10px;min-height:18px}
+  .status.err{color:var(--err)}
+  footer{text-align:center;font-size:12px;color:var(--muted);margin-top:26px}
+  @media(max-width:520px){.card{padding:24px 18px}.scale.s11{grid-template-columns:repeat(6,1fr)}h1{font-size:28px}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="panel">
-    <h1>Card de depoimento</h1>
-    <p class="sub">Cole um depoimento real e autorizado. A arte atualiza na hora.</p>
-
-    <label>Nome do cliente</label>
-    <input id="nome" placeholder="Ex.: Mariana S." value="">
-
-    <label>Serviço</label>
-    <input id="servico" placeholder="Ex.: Ensaio fotográfico" value="">
-
-    <label>Avaliação</label>
-    <div class="stars" id="stars"></div>
-
-    <label>Depoimento</label>
-    <textarea id="texto" maxlength="320" placeholder="Cole aqui o depoimento exatamente como o cliente escreveu."></textarea>
-    <div class="count" id="count">0/320</div>
-
-    <div class="row">
-      <div>
-        <label>Formato</label>
-        <select id="formato">
-          <option value="feed">Feed 4:5</option>
-          <option value="story">Stories 9:16</option>
-        </select>
-      </div>
-      <div>
-        <label>Estilo</label>
-        <select id="estilo">
-          <option value="claro">Claro</option>
-          <option value="verde">Verde</option>
-        </select>
-      </div>
-    </div>
-
-    <label class="check"><input type="checkbox" id="autorizado"> O cliente autorizou a publicação deste depoimento com o nome dele.</label>
-    <div class="warn" id="warn">Marque a autorização antes de baixar.</div>
-
-    <button class="btn" id="baixar">Baixar imagem</button>
-  </div>
-
-  <div class="preview"><canvas id="cv"></canvas></div>
+  <header>
+    <div class="mono" aria-hidden="true">DF</div>
+    <div class="logo">Danfer</div>
+    <div class="logo-sub">FOTOGRAFIAS.</div>
+    <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+    <div class="step-label" id="stepLabel" aria-live="polite"></div>
+  </header>
+  <main id="app"></main>
+  <footer>Danfer Fotografias · @danfer.fotografia</footer>
 </div>
 
 <script>
-const $ = id => document.getElementById(id);
-const cv = $('cv'), ctx = cv.getContext('2d');
-let nota = 5;
+/* ============ CONFIGURAÇÃO ============ */
+const WHATSAPP = '55XXXXXXXXXXX'; // troque pelo número da Danfer: 55 + DDD + número, sem espaços
+const STORE = 'danfer_pesquisa_v1';
+const MAX_MSG = 3000;
 
-const C = {
-  claro: { bg: '#f6f1e7', card: '#fffdf8', ink: '#26302b', title: '#1e3a2c', gold: '#b08d57', muted: '#7c7566', line: '#e6ddca' },
-  verde: { bg: '#1e3a2c', card: '#244635', ink: '#f4eee2', title: '#f4eee2', gold: '#c9a96e', muted: '#cbbf9f', line: '#3a5b49' }
-};
+/* ============ PERGUNTAS ============ */
+const STEPS = [
+  { title: 'Sua experiência com a Danfer', lead: 'Leva uns 3 minutos. Sua opinião ajuda a gente a cuidar ainda melhor de cada cliente.', qs: [
+    { id: 'nome', t: 'Seu nome', h: 'Opcional', type: 'text' },
+    { id: 'servico', t: 'Qual serviço você contratou?', type: 'choice', req: true, options: ['Ensaio fotográfico', 'Evento / aniversário', 'Casamento', 'Evento corporativo', 'Outro'] },
+    { id: 'video', t: 'Seu pacote incluiu vídeo?', type: 'choice', req: true, options: ['Sim', 'Não'] }
+  ]},
+  { title: 'Experiência geral', qs: [
+    { id: 'geral', t: 'Como você avalia sua experiência geral com a Danfer?', type: 'stars', req: true },
+    { id: 'expectativa', t: 'A experiência correspondeu às suas expectativas?', type: 'choice', req: true, options: ['Superou', 'Correspondeu', 'Ficou abaixo'] },
+    { id: 'nps', t: 'De 0 a 10, qual a chance de você recomendar a Danfer para um amigo?', type: 'nps', req: true },
+    { id: 'nps_motivo', t: 'O que faltou para a nota ser maior?', h: 'Opcional, mas ajuda muito.', type: 'textarea', max: 400, showIf: a => a.nps !== undefined && a.nps <= 6 }
+  ]},
+  { title: 'Atendimento e comunicação', qs: [
+    { id: 'cordialidade', t: 'Como você avalia a cordialidade no atendimento?', type: 'scale5', req: true },
+    { id: 'comunicacao', t: 'A comunicação foi clara durante todo o processo?', type: 'scale5', req: true },
+    { id: 'atend_motivo', t: 'O que aconteceu no atendimento?', h: 'Conta pra gente, queremos melhorar.', type: 'textarea', max: 400, showIf: a => (a.cordialidade && a.cordialidade <= 2) || (a.comunicacao && a.comunicacao <= 2) },
+    { id: 'pontualidade', t: 'A equipe foi pontual e profissional no dia?', type: 'scale5', req: true },
+    { id: 'conforto', t: 'Você se sentiu à vontade durante a cobertura ou o ensaio?', type: 'choice', req: true, options: ['Muito', 'Sim', 'Um pouco', 'Não'] }
+  ]},
+  { title: 'Fotos, vídeo e entrega', qs: [
+    { id: 'fotos', t: 'Como você avalia a qualidade das fotografias?', type: 'stars', req: true },
+    { id: 'videoq', t: 'Como você avalia o vídeo?', type: 'stars', req: true, showIf: a => a.video === 'Sim' },
+    { id: 'prazo', t: 'O prazo de entrega foi respeitado?', type: 'choice', req: true, options: ['Sim', 'Não'] },
+    { id: 'entrega_motivo', t: 'O que poderia ter sido melhor na entrega?', type: 'textarea', max: 400, showIf: a => a.prazo === 'Não' },
+    { id: 'custo', t: 'Como você avalia o custo-benefício?', type: 'scale5', req: true },
+    { id: 'favorito', t: 'Qual foi sua parte favorita do material?', h: 'Opcional', type: 'textarea', max: 400 }
+  ]},
+  { title: 'Para fechar', privacy: true, qs: [
+    { id: 'agradou', t: 'O que mais te agradou na experiência com a Danfer?', type: 'textarea', max: 500 },
+    { id: 'melhorar', t: 'O que poderíamos melhorar?', type: 'textarea', max: 500 },
+    { id: 'novamente', t: 'Você contrataria a Danfer novamente?', type: 'choice', req: true, options: ['Com certeza', 'Talvez', 'Não'] },
+    { id: 'interesse', t: 'Quais serviços você gostaria de conhecer?', type: 'multi', options: ['Ensaio fotográfico', 'Fotografia de eventos', 'Vídeo', 'Casamento'], showIf: a => a.novamente === 'Com certeza' || a.novamente === 'Talvez' },
+    { id: 'depoimento', t: 'Quer deixar um depoimento?', h: 'Opcional', type: 'textarea', max: 600 },
+    { id: 'aut_depo', type: 'check', label: 'Autorizo a Danfer a publicar meu depoimento com meu nome.', showIf: a => !!(a.depoimento && a.depoimento.trim()) },
+    { id: 'aut_novidades', type: 'check', label: 'Quero receber novidades e ofertas da Danfer.' },
+    { id: 'aut_contato', type: 'check', label: 'Autorizo a Danfer a entrar em contato para conversar sobre meu feedback.' }
+  ]}
+];
 
-function drawStarsUI() {
-  const s = $('stars'); s.innerHTML = '';
-  for (let i = 1; i <= 5; i++) {
-    const b = document.createElement('button');
-    b.type = 'button'; b.textContent = '★'; b.className = i <= nota ? 'on' : '';
-    b.onclick = () => { nota = i; drawStarsUI(); draw(); };
-    s.append(b);
+/* ============ ESTADO ============ */
+let answers = {};
+let step = 0;
+try {
+  const s = JSON.parse(localStorage.getItem(STORE) || '{}');
+  answers = s.answers || {};
+  step = Math.max(0, Math.min(s.step || 0, STEPS.length - 1));
+} catch (e) {}
+const save = () => { try { localStorage.setItem(STORE, JSON.stringify({ answers, step })); } catch (e) {} };
+const setAns = (id, v) => { answers[id] = v; save(); };
+
+/* ============ UTILIDADES ============ */
+const el = (tag, attrs = {}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') e.className = v;
+    else if (k === 'onclick') e.addEventListener('click', v);
+    else e.setAttribute(k, v);
   }
-}
+  kids.flat().forEach(c => c != null && e.append(c.nodeType ? c : document.createTextNode(c)));
+  return e;
+};
+const visible = q => !q.showIf || q.showIf(answers);
+const filled = q => {
+  const v = answers[q.id];
+  return Array.isArray(v) ? v.length > 0 : v !== undefined && v !== null && String(v).trim() !== '';
+};
+const clean = s => String(s).replace(/[*_~]/g, '');
 
-function wrapLines(text, maxWidth) {
-  const words = text.split(/\s+/).filter(Boolean), lines = [];
-  let line = '';
-  words.forEach(w => {
-    const test = line ? line + ' ' + w : w;
-    if (ctx.measureText(test).width > maxWidth && line) { lines.push(line); line = w; }
-    else line = test;
+function syncVisibility() {
+  STEPS[step].qs.forEach(q => {
+    const b = document.querySelector(`.q[data-id="${q.id}"]`);
+    if (b) b.hidden = !visible(q);
   });
-  if (line) lines.push(line);
-  return lines;
+  const shown = [...document.querySelectorAll('.q:not([hidden])')];
+  shown.forEach((b, i) => b.style.borderTop = i === 0 ? '0' : '');
+  const missLeft = document.querySelectorAll('.q.miss:not([hidden])').length;
+  const alert = document.getElementById('alert');
+  if (alert && !missLeft) alert.classList.remove('show');
 }
 
-function roundRect(x, y, w, h, r) {
-  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+/* ============ PERGUNTA ============ */
+function renderQ(q) {
+  const box = el('div', { class: 'q', 'data-id': q.id });
+  if (q.type !== 'check') box.append(el('div', { class: 'q-t' }, q.t, q.req ? el('span', { class: 'req', 'aria-label': 'obrigatória' }, '*') : null));
+  if (q.h) box.append(el('div', { class: 'q-h' }, q.h));
+  const answered = () => { box.classList.remove('miss'); syncVisibility(); };
+
+  if (q.type === 'text') {
+    const i = el('input', { type: 'text', placeholder: 'Digite aqui', 'aria-label': q.t });
+    i.value = answers[q.id] || '';
+    i.addEventListener('input', () => setAns(q.id, i.value));
+    box.append(i);
+  }
+
+  if (q.type === 'textarea') {
+    const max = q.max || 500;
+    const t = el('textarea', { maxlength: max, placeholder: 'Escreva com suas palavras', 'aria-label': q.t });
+    t.value = answers[q.id] || '';
+    const c = el('div', { class: 'count' }, `${t.value.length}/${max}`);
+    t.addEventListener('input', () => { setAns(q.id, t.value); c.textContent = `${t.value.length}/${max}`; answered(); });
+    box.append(t, c);
+  }
+
+  if (q.type === 'choice' || q.type === 'multi') {
+    const wrap = el('div', { class: 'opts', role: 'group', 'aria-label': q.t });
+    const paint = () => wrap.querySelectorAll('.opt').forEach(b => {
+      const on = q.type === 'multi' ? (answers[q.id] || []).includes(b.dataset.v) : answers[q.id] === b.dataset.v;
+      b.classList.toggle('on', on); b.setAttribute('aria-pressed', on);
+    });
+    q.options.forEach(o => wrap.append(el('button', { type: 'button', class: 'opt', 'data-v': o, onclick: () => {
+      if (q.type === 'multi') {
+        const cur = new Set(answers[q.id] || []);
+        cur.has(o) ? cur.delete(o) : cur.add(o);
+        setAns(q.id, [...cur]);
+      } else setAns(q.id, o);
+      paint(); answered();
+    } }, o)));
+    paint(); box.append(wrap);
+  }
+
+  if (q.type === 'scale5' || q.type === 'nps') {
+    const n = q.type === 'nps' ? 11 : 5, start = q.type === 'nps' ? 0 : 1;
+    const wrap = el('div', { class: 'scale ' + (n === 11 ? 's11' : 's5'), role: 'group', 'aria-label': q.t });
+    const paint = () => wrap.querySelectorAll('button').forEach((b, k) => {
+      const on = answers[q.id] === k + start; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on);
+    });
+    for (let i = start; i < start + n; i++) {
+      wrap.append(el('button', { type: 'button', 'aria-label': `Nota ${i}`, onclick: () => { setAns(q.id, i); paint(); answered(); } }, String(i)));
+    }
+    paint();
+    box.append(wrap, el('div', { class: 'scale-legend' },
+      el('span', {}, q.type === 'nps' ? 'Nada provável' : 'Ruim'),
+      el('span', {}, q.type === 'nps' ? 'Muito provável' : 'Excelente')));
+  }
+
+  if (q.type === 'stars') {
+    const wrap = el('div', { class: 'stars', role: 'group', 'aria-label': q.t });
+    const paint = () => wrap.querySelectorAll('button').forEach((b, k) => {
+      b.classList.toggle('on', k < (answers[q.id] || 0));
+      b.setAttribute('aria-pressed', answers[q.id] === k + 1);
+    });
+    for (let i = 1; i <= 5; i++) {
+      wrap.append(el('button', { type: 'button', 'aria-label': `${i} estrela${i > 1 ? 's' : ''}`, onclick: () => { setAns(q.id, i); paint(); answered(); } }, '★'));
+    }
+    paint(); box.append(wrap);
+  }
+
+  if (q.type === 'check') {
+    const c = el('input', { type: 'checkbox' });
+    c.checked = !!answers[q.id];
+    c.addEventListener('change', () => setAns(q.id, c.checked));
+    box.append(el('label', { class: 'check' }, c, el('span', {}, q.label)));
+  }
+
+  box.append(el('div', { class: 'msg' }, 'Esta resposta é obrigatória.'));
+  box.hidden = !visible(q);
+  return box;
 }
 
-function ornament(cx, y, color) {
-  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(cx - 120, y); ctx.lineTo(cx - 22, y); ctx.moveTo(cx + 22, y); ctx.lineTo(cx + 120, y); ctx.stroke();
-  ctx.save(); ctx.translate(cx, y); ctx.rotate(Math.PI / 4); ctx.fillRect(-7, -7, 14, 14); ctx.restore();
+/* ============ ETAPA ============ */
+function render() {
+  const app = document.getElementById('app');
+  const s = STEPS[step];
+  document.getElementById('bar').style.width = ((step + 1) / (STEPS.length + 1) * 100) + '%';
+  document.getElementById('stepLabel').textContent = `Etapa ${step + 1} de ${STEPS.length}`;
+
+  const card = el('section', { class: 'card' });
+  card.append(el('h1', {}, s.title));
+  if (s.lead) card.append(el('p', { class: 'lead' }, s.lead));
+  card.append(el('div', { class: 'divider', 'aria-hidden': 'true' }, '✦'));
+  s.qs.forEach(q => card.append(renderQ(q)));
+  if (s.privacy) card.append(el('div', { class: 'note' },
+    'Privacidade: usamos suas respostas apenas para melhorar nossos serviços. Seu depoimento só é publicado se você autorizar acima, e você pode pedir a exclusão das suas respostas a qualquer momento.'));
+  card.append(el('div', { class: 'alert', id: 'alert', role: 'alert' }));
+
+  const nav = el('div', { class: 'nav' });
+  if (step > 0) nav.append(el('button', { type: 'button', class: 'btn', onclick: () => { step--; save(); render(); } }, '← Voltar'));
+  const last = step === STEPS.length - 1;
+  nav.append(el('button', { type: 'button', class: 'btn primary' + (last ? ' gold' : ''), onclick: next }, last ? 'Enviar respostas' : 'Continuar →'));
+  card.append(nav);
+
+  app.innerHTML = '';
+  app.append(card);
+  syncVisibility();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function draw() {
-  const story = $('formato').value === 'story';
-  const W = 1080, H = story ? 1920 : 1350;
-  cv.width = W; cv.height = H;
-  const p = C[$('estilo').value];
-  const nome = $('nome').value.trim() || 'Nome do cliente';
-  const servico = $('servico').value.trim();
-  const texto = $('texto').value.trim() || 'O depoimento do cliente aparece aqui.';
-  $('count').textContent = `${$('texto').value.length}/320`;
-
-  ctx.fillStyle = p.bg; ctx.fillRect(0, 0, W, H);
-
-  const pad = 80, cardY = story ? 360 : 250, cardH = story ? 1180 : 860;
-  ctx.fillStyle = p.card; roundRect(pad, cardY, W - pad * 2, cardH, 36); ctx.fill();
-  ctx.strokeStyle = p.line; ctx.lineWidth = 2; ctx.stroke();
-  ctx.strokeStyle = p.gold; ctx.lineWidth = 1.5; roundRect(pad + 18, cardY + 18, W - pad * 2 - 36, cardH - 36, 26); ctx.stroke();
-
-  ctx.textAlign = 'center';
-  const top = story ? 150 : 90;
-  ctx.fillStyle = p.gold; ctx.font = '96px "Pinyon Script"'; ctx.fillText('Danfer', W / 2, top + 70);
-  ctx.font = '600 24px Cinzel'; ctx.letterSpacing = '10px'; ctx.fillText('FOTOGRAFIAS.', W / 2 + 5, top + 112); ctx.letterSpacing = '0px';
-
-  ctx.font = '600 26px Cinzel'; ctx.fillStyle = p.muted; ctx.letterSpacing = '6px';
-  ctx.fillText('O QUE NOSSOS CLIENTES DIZEM', W / 2 + 3, cardY + 110); ctx.letterSpacing = '0px';
-
-  ctx.font = '64px serif'; ctx.fillStyle = p.gold;
-  ctx.fillText('★'.repeat(nota) + '☆'.repeat(5 - nota), W / 2, cardY + 200);
-
-  ctx.font = '600 160px "Cormorant Garamond"'; ctx.fillStyle = p.gold; ctx.globalAlpha = .35;
-  ctx.fillText('“', W / 2, cardY + 330); ctx.globalAlpha = 1;
-
-  const maxW = W - pad * 2 - 160;
-  let size = 50, lines;
-  do { ctx.font = `italic 500 ${size}px "Cormorant Garamond"`; lines = wrapLines(texto, maxW); size -= 2; }
-  while (lines.length * size * 1.35 > cardH - 520 && size > 30);
-  const lh = (size + 2) * 1.35;
-  const blockH = lines.length * lh;
-  let y = cardY + 300 + ((cardH - 560) - blockH) / 2 + lh * .7;
-  ctx.fillStyle = p.title;
-  lines.forEach(l => { ctx.fillText(l, W / 2, y); y += lh; });
-
-  const baseY = cardY + cardH - 170;
-  ornament(W / 2, baseY, p.gold);
-  ctx.fillStyle = p.title; ctx.font = '600 40px "Cormorant Garamond"'; ctx.fillText(nome, W / 2, baseY + 64);
-  if (servico) { ctx.fillStyle = p.muted; ctx.font = '500 26px Inter'; ctx.fillText(servico, W / 2, baseY + 104); }
-
-  ctx.fillStyle = p.muted; ctx.font = '500 28px Inter';
-  ctx.fillText('@danfer.fotografia', W / 2, H - (story ? 200 : 90));
+function next() {
+  const qs = STEPS[step].qs.filter(visible);
+  const missing = qs.filter(q => q.req && !filled(q));
+  document.querySelectorAll('.q').forEach(b => b.classList.toggle('miss', missing.some(m => m.id === b.dataset.id)));
+  const alert = document.getElementById('alert');
+  if (missing.length) {
+    alert.textContent = missing.length === 1 ? 'Falta responder 1 pergunta obrigatória.' : `Faltam responder ${missing.length} perguntas obrigatórias.`;
+    alert.classList.add('show');
+    document.querySelector('.q.miss')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  if (step < STEPS.length - 1) { step++; save(); render(); }
+  else finish();
 }
 
-['nome', 'servico', 'texto', 'formato', 'estilo'].forEach(id => $(id).addEventListener('input', draw));
-$('autorizado').addEventListener('change', () => $('warn').style.display = 'none');
+/* ============ RESUMO E ENVIO ============ */
+function summary() {
+  const lines = ['*Pesquisa de satisfação · Danfer*', ''];
+  STEPS.forEach(s => s.qs.filter(visible).forEach(q => {
+    const v = answers[q.id];
+    if (v === undefined || v === '' || (Array.isArray(v) && !v.length)) return;
+    const label = q.type === 'check' ? q.label : q.t;
+    const val = q.type === 'check' ? (v ? 'Sim' : 'Não')
+      : q.type === 'stars' ? `${v}/5 ★`
+      : Array.isArray(v) ? v.join(', ') : v;
+    lines.push(`*${clean(label)}*`, clean(val), '');
+  }));
+  return lines.join('\n').trim();
+}
 
-$('baixar').addEventListener('click', () => {
-  if (!$('autorizado').checked) { $('warn').style.display = 'block'; return; }
-  const a = document.createElement('a');
-  const nome = ($('nome').value.trim() || 'cliente').toLowerCase().replace(/[^a-z0-9]+/gi, '-');
-  a.download = `danfer-depoimento-${nome}-${$('formato').value}.png`;
-  a.href = cv.toDataURL('image/png');
-  a.click();
-});
+function finish() {
+  const text = summary();
+  const app = document.getElementById('app');
+  document.getElementById('bar').style.width = '100%';
+  document.getElementById('stepLabel').textContent = 'Concluído';
 
-drawStarsUI();
-document.fonts.ready.then(draw);
-draw();
+  const numeroOk = /^\d{12,13}$/.test(WHATSAPP);
+  const longo = text.length > MAX_MSG;
+  const msg = longo ? text.slice(0, MAX_MSG - 60) + '\n\n(mensagem cortada, respostas completas copiadas)' : text;
+  const wa = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
+
+  const status = el('div', { class: 'status', 'aria-live': 'polite' });
+  const say = (t, err) => { status.textContent = t; status.classList.toggle('err', !!err); };
+
+  const copiar = async () => {
+    try { await navigator.clipboard.writeText(text); say('Respostas copiadas. Se precisar, é só colar no WhatsApp da Danfer.'); }
+    catch (e) { say('Não foi possível copiar automaticamente. Selecione e copie o texto manualmente.', true); }
+  };
+
+  const enviar = el('a', { class: 'btn primary gold', href: numeroOk ? wa : '#', target: '_blank', rel: 'noopener', style: 'margin:0' }, 'Enviar pelo WhatsApp');
+  enviar.addEventListener('click', e => {
+    if (!numeroOk) { e.preventDefault(); say('O número do WhatsApp da Danfer ainda não foi configurado.', true); return; }
+    if (longo) copiar();
+    try { localStorage.removeItem(STORE); } catch (err) {}
+    say('Abrindo o WhatsApp… Não esqueça de tocar em enviar.');
+  });
+
+  app.innerHTML = '';
+  app.append(el('section', { class: 'card done' },
+    el('div', { class: 'seal', 'aria-hidden': 'true' }, '✓'),
+    el('h1', {}, 'Obrigado!'),
+    el('p', { class: 'lead' }, 'Toque no botão abaixo para enviar suas respostas pelo WhatsApp.'),
+    el('div', { class: 'divider', 'aria-hidden': 'true' }, '✦'),
+    el('div', { class: 'nav', style: 'justify-content:center;flex-wrap:wrap' },
+      enviar,
+      el('button', { type: 'button', class: 'btn', onclick: copiar }, 'Copiar respostas')),
+    status,
+    el('div', { style: 'margin-top:14px' },
+      el('button', { type: 'button', class: 'btn', onclick: () => render() }, '← Revisar respostas')),
+    el('p', { class: 'lead', style: 'margin-top:18px;font-size:14px' }, 'Foi um prazer registrar esse momento com você.')
+  ));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+render();
 </script>
 </body>
 </html>
